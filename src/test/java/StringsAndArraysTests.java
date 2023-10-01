@@ -1,9 +1,9 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 import org.rasedgwick.algorithms.StringsAndArrays;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,7 +64,32 @@ public class StringsAndArraysTests {
     public void URLifyTest() {
         String url = " 123 ";
         String result = StringsAndArrays.URLify(url, url.length());
-        assertEquals( "%20123%20", result);
+        assertEquals("%20123%20", result);
     }
 
+    @ParameterizedTest(name = "#{index} - Run oneAway test with args = {0}, {1}, {2}")
+    @CsvSource({
+            "pale, pale, true",
+            "pale, ple, true",
+            "pales, pale, true",
+            "pale, bale, true",
+            "pale, bae, false"
+    })
+    public void oneAwayTest(String s, String t, String expectedResult) {
+        assertEquals(Boolean.parseBoolean(expectedResult), StringsAndArrays.oneAway(s, t));
+    }
+
+    @ParameterizedTest(name = "#{index} - Run simpleStringCompression test with args = {0}, {1}")
+    @CsvSource({
+            "a, a",
+            "abc, abc",
+            "aabc, aabc",
+            "aabbcc, aabbcc",
+            "abbcccdddd, a2b2c3d4",
+            "ddddcccbba, d4c3b2a1",
+            "aabcccdfffffx, a2b1c3d1f5x1"
+    })
+    public void simpleStringCompressionTest(String input, String expectedOutput) {
+        assertEquals(expectedOutput, StringsAndArrays.SimpleStringCompression(input));
+    }
 }
