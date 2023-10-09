@@ -4,8 +4,6 @@ import org.rasedgwick.Utils.ArrayHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import javax.swing.event.ListDataEvent;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.*;
@@ -1189,7 +1187,7 @@ public class StringsAndArrays {
     }
 
 
-    private static final double ANSWERE_MODIFER = Math.pow(10, 9) + 7;
+    private static final double ANSWER_MODIFIER = Math.pow(10, 9) + 7;
     private static String str;
 
     public static void initializeMaxPalindromes(String s) {
@@ -1207,38 +1205,67 @@ public class StringsAndArrays {
         return answers;
     }
 
-    private static double maxPalindromes(int leftBound, int rightBound) {
+    private static int maxPalindromes(int leftBound, int rightBound) {
         char[] subString = str.substring(leftBound, rightBound).toCharArray();
-        Map<Character, Integer> charCountsMap = getCharacterCount(subString);
+        Map<Character, Long> charCountsMap = getCharacterCount(subString);
+        long longestPossiblePalindrome = getMaxPalindromeLength((long) subString.length, charCountsMap.values());
+        long leftSideLength = longestPossiblePalindrome / 2;
+        boolean hasMiddle = longestPossiblePalindrome % 2 != 0;
+        long longestPalindrome = getMaxPalindromeLength(leftSideLength, charCountsMap.values());
+        if (hasMiddle) {
+            long singletons = 0;  // Performing this calc twice could optimize
+            for (Long n : charCountsMap.values()) {
+                singletons += n % 2;
+            }
+            if (singletons > 0) {
+                longestPalindrome *= singletons;
+            }
+        }
 
-
-
-        return (double) 0 % ANSWERE_MODIFER;
+        return (int) (longestPalindrome % ANSWER_MODIFIER);
     }
 
-    public static HashMap<Character, Integer> getCharacterCount(char[] chars) {
-        HashMap<Character, Integer> map = new HashMap<>();
+    // (length)! / (charCount_1)!(charCount_2)!...(charCount)n!
+    public static long getPermutationsWithRepetition(Collection<Long> charCounts, Long length) {
+        long dividend = factorial(length);
+        long denominator = 1L;
+        for (Long l : charCounts) {
+            denominator *= factorial(l);
+        }
+
+        return dividend / denominator;
+    }
+
+    public static long factorial(long n) {
+        if (n > 1) {
+            return n * factorial(n -1);
+        } else {
+            return 1;
+        }
+    }
+
+    public static HashMap<Character, Long> getCharacterCount(char[] chars) {
+        HashMap<Character, Long> map = new HashMap<>();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
             if (map.containsKey(c)) {
                 map.put(c, map.get(c) + 1);
             } else {
-                map.put(c, 1);
+                map.put(c, 1L);
             }
         }
         return map;
     }
 
-    public static int getMaxPalindromeLength(int numberOfCharacters, Collection<Integer> characterCounts) {
-        int pairCount = 0;
-        int singletonCount = 0;
-        int countsAbove1 = 0;
-        for (Integer n : characterCounts) {
+    public static long getMaxPalindromeLength(Long numberOfCharacters, Collection<Long> characterCounts) {
+        long pairCount = 0L;
+        long singletonCount = 0L;
+        for (Long n : characterCounts) {
             pairCount += n / 2;
             singletonCount += n % 2;
         }
 
-        for (int i = numberOfCharacters; i > 0; i--) {
+        for (long i = numberOfCharacters; i > 0; i--) {
             boolean isEven = i % 2 == 0;
             if (isEven && pairCount >= i / 2) {
                 return i;

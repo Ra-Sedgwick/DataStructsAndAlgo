@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import org.junit.platform.commons.util.StringUtils;
 import org.rasedgwick.algorithms.StringsAndArrays;
 
 import java.util.ArrayList;
@@ -326,8 +325,35 @@ public class StringsAndArraysTests {
     })
     public void getMaxPalindromeLengthTest(String str, String expected) {
         char[] chars = str.toCharArray();
-        Map<Character, Integer> countMap = StringsAndArrays.getCharacterCount(chars);
-        int result = StringsAndArrays.getMaxPalindromeLength(chars.length, countMap.values());
-        assertEquals(Integer.parseInt(expected), result);
+        Map<Character, Long> countMap = StringsAndArrays.getCharacterCount(chars);
+        long result = StringsAndArrays.getMaxPalindromeLength((long) chars.length, countMap.values());
+        assertEquals(Long.parseLong(expected), result);
+    }
+
+    @ParameterizedTest(name = "#{index} - Run getPermutationsWithRepTest with args = {0}, {1}")
+    @CsvSource({
+        "tooth, 30",
+        "a, 1",
+        "ab, 2",
+        "week, 12",
+        "mississippi, 34650"
+    })
+    public void getPermutationsWithRepTest(String s, String expected) {
+        char[] chars = s.toCharArray();
+        Map<Character, Long> countMap = StringsAndArrays.getCharacterCount(chars);
+        long r = StringsAndArrays.getPermutationsWithRepetition(countMap.values(), (long) chars.length);
+        assertEquals(Long.parseLong(expected), r);
+    }
+
+    @ParameterizedTest(name = "#{index} - Run factorialTest test with args = {0}, {1}")
+    @CsvSource({
+            "1, 1",
+            "2, 2",
+            "3, 6",
+            "11, 39916800"
+    })
+    public void factorialTest(String n, String expected) {
+        long r = StringsAndArrays.factorial(Long.parseLong(n));
+        assertEquals(Long.parseLong(expected), r);
     }
 }
